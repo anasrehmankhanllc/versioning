@@ -1,0 +1,24 @@
+name: Fetch Latest Tag
+
+on: [push]
+
+jobs:
+  get-latest-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get the latest tag
+        id: get_tag
+        run: |
+          # List all tags and sort them. Assuming tags are in semantic versioning format.
+          latest_tag=$(git tag -l | sort -V | tail -n 1)
+          echo "Latest tag: $latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Display the latest tag
+        run: echo "The latest tag is ${{ env.LATEST_TAG }}"
