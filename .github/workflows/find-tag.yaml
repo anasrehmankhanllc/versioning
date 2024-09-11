@@ -22,3 +22,20 @@ jobs:
 
       - name: Display the latest tag
         run: echo "The latest tag is ${{ env.LATEST_TAG }}"
+
+      - name: Update package.json version
+        run: |
+          if [ -z "${{ env.LATEST_TAG }}" ]; then
+            echo "No tags found, skipping version update."
+            exit 1
+          fi
+          # Update package.json version
+          npm version ${LATEST_TAG} --no-git-tag-version
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.PAT }}
+
+      - name: show the content of package.json
+        run: cat package.json
