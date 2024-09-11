@@ -32,15 +32,12 @@ jobs:
           # Update package.json version
           npm version ${LATEST_TAG} --no-git-tag-version
 
-      - name: Run the Action
-        uses: devops-infra/action-commit-push@master
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
         with:
-          github_token: "${{ secrets.PAT }}"
-          add_timestamp: true
-          commit_prefix: "[AUTO]"
-          commit_message: "bumping version"
-          force: false
-          target_branch: main
+          author_name: anasrehmankhanllc
+          author_email: anasrehmankhanllc@gmail.com
+          message: 'initial'
 
       - name: show the content of package.json
         run: cat package.json
