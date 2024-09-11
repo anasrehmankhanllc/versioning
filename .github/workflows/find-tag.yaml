@@ -39,7 +39,7 @@ jobs:
           author_email: anasrehmankhanllc@gmail.com
           message: 'initial'
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: show the content of package.json
         run: cat package.json
