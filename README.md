@@ -1,1 +1,1 @@
-staging prod and dev
+lint
