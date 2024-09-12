@@ -1,4 +1,4 @@
-name: reviewer tag created and
+name: Review tag
 on:
   # workflow_dispatch:
   push:
