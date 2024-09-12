@@ -4,7 +4,7 @@ on:
   push:
     # Pattern matched against refs/tags
     tags:        
-      - '**'           # Push events to every tag not containing /
+      - 'ver-dev-release/v**, ver-prod-release/v'           # Push events to every tag not containing /
 
 jobs:
   get-latest-tag:
