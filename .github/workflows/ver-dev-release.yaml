@@ -28,31 +28,44 @@ jobs:
       - name: Get the latest tag
         id: get_tag
         run: |
-          # Extract tags of both types and find the latest one.
-          latest_tag=$(git tag -l | grep '^ver-' | sort -V | tail -n 1)
+          # Extract the latest tag that matches 'ver-dev-release/' or 'ver-prod-release/' and sort correctly
+          latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
+          # Check if no 'ver-dev-release/' tags found, then look for 'ver-prod-release/' tags
+          if [ -z "$latest_tag" ]; then
+            latest_tag=$(git tag -l | grep '^ver-prod-release/' | sort -V | tail -n 1)
+          fi
+          # Print and set the latest tag
           echo "Latest tag: $latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-
-      # - name: Get the latest tag
-      #   id: get_tag
-      #   run: |
-      #     # Extract the latest tag. Modify the pattern if needed.
-      #     latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
-      #     echo "Latest tag: $latest_tag"
-      #     echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Display the latest tag
         run: echo "The latest tag is ${{ env.LATEST_TAG }}"
 
-      - name: Update package.json version
+      - name: Check if package.json version is up-to-date
+        id: check_version
         run: |
-          if [ -z "${{ env.LATEST_TAG }}" ]; then
-            echo "No valid tags found, skipping version update."
-            exit 1
-          fi
-          # Update package.json version
-          npm version ${LATEST_TAG#*/} --no-git-tag-version --v
+          # Get the current version from package.json
+          current_version=$(node -p "require('./package.json').version")
+          echo "Current package.json version: $current_version"
+          # Extract version part after the slash from latest tag
+          latest_version=${{ env.LATEST_TAG#*/}}
+          echo "Latest tag version: $latest_version"
 
+          if [ "$current_version" = "$latest_version" ]; then
+            echo "Package.json is already up-to-date with the latest tag."
+            echo "NO_UPDATE=true" >> $GITHUB_ENV
+          else
+            echo "Package.json is not up-to-date, updating version."
+            echo "NO_UPDATE=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update package.json version
+        if: env.NO_UPDATE == 'false'
+        run: |
+          # Update package.json version
+          npm version ${LATEST_TAG#*/} --no-git-tag-version
+        env:
+          NODE_ENV: production
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
