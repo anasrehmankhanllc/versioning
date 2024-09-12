@@ -1,10 +1,11 @@
-name: Update package.json version
+name: var-dev-release.yaml
 
 on:
-  push:
-    branches:
-      - mainsss
-      - hotfixx
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - mainsss
+  #     - hotfixx
     #   - 'releases/**'
     # tags:        
       # - '**'           # Push events to every ltag not containing /
