@@ -2,9 +2,13 @@ name: Update package.json version
 
 on:
   push:
-    # Pattern matched against refs/tags
+    branches:
+      - main
+      # - hotfix
+      # - 'releases/**'
     tags:        
       - '**'           # Push events to every ltag not containing /
+
 
 jobs:
   get-latest-tag:
