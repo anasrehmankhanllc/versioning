@@ -1,6 +1,6 @@
 {
     "name": "test",
-    "version": "0.1.13",
+    "version": "0.2.7",
     "description": "test desc",
     "main": "index.js",
     "scripts": {
