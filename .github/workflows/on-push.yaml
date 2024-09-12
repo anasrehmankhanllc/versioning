@@ -1,5 +1,5 @@
 
-name: Review tag
+name: on push
 on:
   workflow_dispatch:
   push:
