@@ -1,6 +1,10 @@
 name: Fetch Latest Tag
 
-on: [push]
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*'           # Push events to every tag not containing /
 
 jobs:
   get-latest-tag:
@@ -42,7 +46,7 @@ jobs:
         with:
           author_name: anasrehmankhanllc
           author_email: anasrehmankhanllc@gmail.com
-          message: 'initial'
+          message: 'bumping npm version'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
