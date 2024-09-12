@@ -3,10 +3,9 @@ name: Fetch Latest Tag
 on:
   workflow_dispatch 
   # push:
-  #   - main
   #   # Pattern matched against refs/tags
   #   tags:        
-  #     - '*'           # Push events to every tag not containing /
+  #     - '**'           # Push events to every tag not containing /
 
 jobs:
   get-latest-tag:
@@ -25,12 +24,11 @@ jobs:
         with:
           author_name: anasrehmankhanllc
           author_email: anasrehmankhanllc@gmail.com
-          # message: 'bumping npm version'
+          message: 'bumping npm version'
           push: origin HEAD:main
           tag: 'v0.1.21 --force'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-
       - name: Fetch all tags
         run: git fetch --tags
 
@@ -53,6 +51,8 @@ jobs:
           fi
           # Update package.json version
           npm version ${LATEST_TAG} --no-git-tag-version
+
+
 
       - name: show the content of package.json
         run: cat package.json
