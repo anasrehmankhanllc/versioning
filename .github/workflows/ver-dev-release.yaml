@@ -25,6 +25,7 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
+
       - name: Get the latest tag
         id: get_tag
         run: |
@@ -38,6 +39,22 @@ jobs:
           echo "Latest tag: $latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
+      # - name: Get the latest tag
+      #   id: get_tag
+      #   run: |
+      #     # Extract tags of both types and find the latest one.
+      #     latest_tag=$(git tag -l | grep '^ver-' | sort -V | tail -n 1)
+      #     echo "Latest tag: $latest_tag"
+      #     echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      # - name: Get the latest tag
+      #   id: get_tag
+      #   run: |
+      #     # Extract the latest tag. Modify the pattern if needed.
+      #     latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
+      #     echo "Latest tag: $latest_tag"
+      #     echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
       - name: Display the latest tag
         run: echo "The latest tag is ${{ env.LATEST_TAG }}"
 
@@ -48,7 +65,7 @@ jobs:
           current_version=$(node -p "require('./package.json').version")
           echo "Current package.json version: $current_version"
           # Extract version part after the slash from latest tag
-          latest_version=${{ env.LATEST_TAG#*/}}
+          latest_version=${{ env.LATEST_TAG}}
           echo "Latest tag version: $latest_version"
 
           if [ "$current_version" = "$latest_version" ]; then
@@ -63,9 +80,17 @@ jobs:
         if: env.NO_UPDATE == 'false'
         run: |
           # Update package.json version
-          npm version ${LATEST_TAG#*/} --no-git-tag-version
-        env:
-          NODE_ENV: production
+          npm version ${LATEST_TAG} --no-git-tag-version
+
+      # - name: Update package.json version
+      #   run: |
+      #     if [ -z "${{ env.LATEST_TAG }}" ]; then
+      #       echo "No valid tags found, skipping version update."
+      #       exit 1
+      #     fi
+      #     # Update package.json version
+      #     npm version ${LATEST_TAG#*/} --no-git-tag-version --v
+
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
