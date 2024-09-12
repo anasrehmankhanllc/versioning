@@ -4,7 +4,7 @@ on:
   push:
     # Pattern matched against refs/tags
     tags:        
-      - '**'           # Push events to every tag not containing /
+      - '**'           # Push events to every ltag not containing /
 
 jobs:
   get-latest-tag:
@@ -28,7 +28,7 @@ jobs:
           latest_tag=$(git tag -l | grep '^ver-' | sort -V | tail -n 1)
           echo "Latest tag: $latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-          
+
       # - name: Get the latest tag
       #   id: get_tag
       #   run: |
