@@ -1,0 +1,55 @@
+name: Update package.json version
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*'           # Push events to every tag not containing /
+
+jobs:
+  get-latest-tag:
+    runs-on: ubuntu-latest
+    env:
+       GITHUB_TOKEN: ${{ secrets.PAT }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get the latest tag
+        id: get_tag
+        run: |
+          # Extract the latest tag. Modify the pattern if needed.
+          latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
+          echo "Latest tag: $latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Display the latest tag
+        run: echo "The latest tag is ${{ env.LATEST_TAG }}"
+
+      - name: Update package.json version
+        run: |
+          if [ -z "${{ env.LATEST_TAG }}" ]; then
+            echo "No valid tags found, skipping version update."
+            exit 1
+          fi
+          # Update package.json version
+          npm version ${LATEST_TAG#*/} --no-git-tag-version
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: anasrehmankhanllc
+          author_email: anasrehmankhanllc@gmail.com
+          message: 'bumping npm version'
+          push: origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: show the content of package.json
+        run: cat package.json
