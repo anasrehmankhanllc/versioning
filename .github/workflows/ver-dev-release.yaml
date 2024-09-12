@@ -51,7 +51,7 @@ jobs:
             exit 1
           fi
           # Update package.json version
-          npm version ${LATEST_TAG#*/} --no-git-tag-version
+          npm version ${LATEST_TAG#*/} --no-git-tag-version --v
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
