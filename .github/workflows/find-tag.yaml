@@ -19,6 +19,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: anasrehmankhanllc
+          author_email: anasrehmankhanllc@gmail.com
+          # message: 'bumping npm version'
+          push: origin HEAD:main
+          tag: 'v0.1.21 --force'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
       - name: Fetch all tags
         run: git fetch --tags
 
@@ -41,16 +52,6 @@ jobs:
           fi
           # Update package.json version
           npm version ${LATEST_TAG} --no-git-tag-version
-
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: anasrehmankhanllc
-          author_email: anasrehmankhanllc@gmail.com
-          message: 'bumping npm version'
-          push: origin HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: show the content of package.json
         run: cat package.json
