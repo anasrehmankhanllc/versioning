@@ -1,11 +1,10 @@
-name: Fetch Latest Tag
+name: Update package.json version
 
 on:
-  workflow_dispatch 
-  # push:
-  #   # Pattern matched against refs/tags
-  #   tags:        
-  #     - '**'           # Push events to every tag not containing /
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**'           # Push events to every tag not containing /
 
 jobs:
   get-latest-tag:
@@ -25,8 +24,8 @@ jobs:
       - name: Get the latest tag
         id: get_tag
         run: |
-          # List all tags and sort them. Assuming tags are in semantic versioning format.
-          latest_tag=$(git tag -l | sort -V | tail -n 1)
+          # Extract the latest tag. Modify the pattern if needed.
+          latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
           echo "Latest tag: $latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
@@ -36,11 +35,11 @@ jobs:
       - name: Update package.json version
         run: |
           if [ -z "${{ env.LATEST_TAG }}" ]; then
-            echo "No tags found, skipping version update."
+            echo "No valid tags found, skipping version update."
             exit 1
           fi
           # Update package.json version
-          npm version ${LATEST_TAG} --no-git-tag-version
+          npm version ${LATEST_TAG#*/} --no-git-tag-version
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
