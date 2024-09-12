@@ -1,10 +1,11 @@
 name: Fetch Latest Tag
 
 on:
-  push:
-    # Pattern matched against refs/tags
-    tags:        
-      - '**'           # Push events to every tag not containing /
+  workflow_dispatch 
+  # push:
+  #   # Pattern matched against refs/tags
+  #   tags:        
+  #     - '**'           # Push events to every tag not containing /
 
 jobs:
   get-latest-tag:
