@@ -24,10 +24,18 @@ jobs:
       - name: Get the latest tag
         id: get_tag
         run: |
-          # Extract the latest tag. Modify the pattern if needed.
-          latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
+          # Extract tags of both types and find the latest one.
+          latest_tag=$(git tag -l | grep '^ver-' | sort -V | tail -n 1)
           echo "Latest tag: $latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          
+      # - name: Get the latest tag
+      #   id: get_tag
+      #   run: |
+      #     # Extract the latest tag. Modify the pattern if needed.
+      #     latest_tag=$(git tag -l | grep '^ver-dev-release/' | sort -V | tail -n 1)
+      #     echo "Latest tag: $latest_tag"
+      #     echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Display the latest tag
         run: echo "The latest tag is ${{ env.LATEST_TAG }}"
