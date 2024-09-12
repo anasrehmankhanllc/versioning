@@ -2,10 +2,10 @@ name: Update package.json version
 
 on:
   push:
-    branches:
-      - main
-      # - hotfix
-      # - 'releases/**'
+    # branches:
+    #   - main
+    #   - hotfix
+    #   - 'releases/**'
     tags:        
       - '**'           # Push events to every ltag not containing /
 
