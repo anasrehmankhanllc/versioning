@@ -1,1 +1,1 @@
-staging prod
+staging prod and dev
