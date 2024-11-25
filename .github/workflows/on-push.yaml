@@ -1,10 +1,10 @@
 
 name: on push
 on:
-  workflow_dispatch:
-  push:
-    tag:
-      - '**'
+  # workflow_dispatch:
+  # push:
+  #   tag:
+  #     - '**'
     # branches:
     #   - main        
 
