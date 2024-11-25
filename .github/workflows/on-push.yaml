@@ -3,8 +3,10 @@ name: on push
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main        
+    tag:
+      - '**'
+    # branches:
+    #   - main        
 
 jobs:
   get-latest-tag:
