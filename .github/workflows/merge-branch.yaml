@@ -2,8 +2,8 @@ name: Review tag
 on:
   workflow_dispatch:
   # push:
-  #   tags:        
-  #     - '*'           
+    tags:        
+      - '**'           
 
 jobs:
   get-latest-tag:
@@ -11,32 +11,62 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full tag history is available
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Get the latest tag
-        id: get_tag
+      - name: Fetch the Latest Tag
+        id: fetch_tag
         run: |
-          # List all tags and sort them. Assuming tags are in semantic versioning format.
-          latest_tag=$(git tag -l | sort -V | tail -n 1)
-          echo "Latest tag: $latest_tag"
-          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          # Fetch the latest tag
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest tag: $LATEST_TAG"
+          echo "tag=$LATEST_TAG" >> $GITHUB_ENV
+
+      - name: Extract Version from Tag
+        id: extract_version
+        run: |
+          # Extract the version after the last '/'
+          VERSION=$(echo "$LATEST_TAG" | awk -F'/' '{print $NF}')
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Check Current Version in package.json
+        id: check_version
+        run: |
+          # Read the current version from package.json
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          echo "Current version in package.json: $CURRENT_VERSION"
+
+          # Compare versions
+          if [ "$CURRENT_VERSION" == "$VERSION" ]; then
+            echo "Release $VERSION is already deployed."
+            echo "already_deployed=true" >> $GITHUB_ENV
+          else
+            echo "Updating to version $VERSION"
+            echo "already_deployed=false" >> $GITHUB_ENV
+
+      # - name: Fetch all tags
+      #   run: git fetch --tags
+
+      # - name: Get the latest tag
+      #   id: get_tag
+      #   run: |
+      #     # List all tags and sort them. Assuming tags are in semantic versioning format.
+      #     latest_tag=$(git tag -l | sort -V | tail -n 1)
+      #     echo "Latest tag: $latest_tag"
+      #     echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Display the latest tag
         run: echo "The latest tag is ${{ env.LATEST_TAG }}"
 
       - name: Update package.json version
         run: |
-          if [ -z "${{ env.LATEST_TAG }}" ]; then
-            echo "No tags found, skipping version update."
-            exit 1
-          fi
-          # Update package.json version
-          npm version ${LATEST_TAG} --no-git-tag-version
+          npm version $VERSION --no-git-tag-version
+          echo "Updated package.json to version $VERSION"
+
 
       - name: show the content of package.json
         run: cat package.json
